@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en-PH" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booth Buddy | Pop-Up Events & Shared Bazaar Booths</title>
+  <meta name="description" content="Join curated pop-up events organized by Booth Buddy. Book a solo booth or share a space with a verified, non-competing brand to split rental costs." />
+
+  <!-- Abstract Logo Favicon ("Two Halves, One Tent") -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120' fill='none'%3E%3Crect x='6' y='6' width='108' height='108' rx='30' fill='%23FAF9F5' stroke='%23E7E5E4' stroke-width='4'/%3E%3Cpath d='M22 36L30 20H90L98 36C98 42.5 92.5 47 85.5 47C79 47 74 42.5 72.5 37C71 42.5 66 47 60 47C54 47 49 42.5 47.5 37C46 42.5 41 47 34.5 47C27.5 47 22 42.5 22 36Z' fill='%23FF5733'/%3E%3Ccircle cx='44' cy='59' r='8' fill='%23FF5733'/%3E%3Cpath d='M30 86C30 74.95 38.95 66 50 66H60V86H30Z' fill='%23FF5733'/%3E%3Ccircle cx='76' cy='59' r='8' fill='%230D9488'/%3E%3Cpath d='M90 86C90 74.95 81.05 66 70 66H60V86H90Z' fill='%230D9488'/%3E%3Ccircle cx='60' cy='76' r='5' fill='%23FAF9F5'/%3E%3Crect x='24' y='90' width='72' height='8' rx='4' fill='%2318181B'/%3E%3C/svg%3E" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAF9F5; color: #18181B; }
+    .bb-gradient-bg { background: linear-gradient(135deg, #FF5733 0%, #F59E0B 100%); }
+    .bb-gradient-text {
+      background: linear-gradient(135deg, #FF5733 0%, #D97706 55%, #0D9488 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-200 selection:text-stone-900">
+
+  <!-- ================= PUBLIC NAVIGATION BAR ================= -->
+  <header id="public-header" class="bg-white/95 backdrop-blur-md border-b border-stone-200/80 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <!-- SECRET 3-CLICK LOGO (Click 3 times to open Secret Admin Portal) -->
+      <div onclick="handleLogoTripleClick()" class="flex items-center gap-3 cursor-pointer group select-none">
+        <svg class="w-11 h-11 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="18" y1="18" x2="102" y2="50" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FF5733"/>
+              <stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="6" width="108" height="108" rx="30" fill="#FAF9F5" stroke="#E7E5E4" stroke-width="4"/>
+          <path d="M22 36L30 20H90L98 36C98 42.5 92.5 47 85.5 47C79 47 74 42.5 72.5 37C71 42.5 66 47 60 47C54 47 49 42.5 47.5 37C46 42.5 41 47 34.5 47C27.5 47 22 42.5 22 36Z" fill="url(#logoGrad)"/>
+          <circle cx="44" cy="59" r="8" fill="#FF5733"/>
+          <path d="M30 86C30 74.9543 38.9543 66 50 66H60V86H30Z" fill="#FF5733"/>
+          <circle cx="76" cy="59" r="8" fill="#0D9488"/>
+          <path d="M90 86C90 74.9543 81.0457 66 70 66H60V86H90Z" fill="#0D9488"/>
+          <circle cx="60" cy="76" r="5" fill="#FAF9F5"/>
+          <rect x="24" y="90" width="72" height="8" rx="4" fill="#18181B"/>
+        </svg>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-stone-900">Booth Buddy</span>
+          <span class="block text-[11px] font-semibold text-teal-700 tracking-wide">Pop-Up Event Organizer</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-stone-600">
+        <button onclick="switchPage('home')" class="hover:text-orange-600 transition font-semibold">Home</button>
+        <button onclick="switchPage('events')" class="hover:text-orange-600 transition font-semibold">Events</button>
+        <button onclick="switchPage('how')" class="hover:text-orange-600 transition font-semibold">About & How It Works</button>
+        <button onclick="switchPage('supplies')" class="hover:text-orange-600 transition font-semibold">Booth Supplies</button>
+      </nav>
+
+      <!-- Right Action & Persistent Auth State -->
+      <div id="header-auth-area" class="flex items-center gap-3"></div>
+    </div>
+  </header>
+
+  <!-- ================= DYNAMIC VIEWS CONTAINER ================= -->
+  <div id="app-container" class="flex-1 flex flex-col"></div>
+
+  <!-- ================= CLEAN PUBLIC FOOTER ================= -->
+  <footer id="public-footer" class="bg-stone-900 text-stone-300 py-12 px-6 mt-auto">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-8 h-8 shrink-0" viewBox="0 0 120 120" fill="none">
+            <rect x="6" y="6" width="108" height="108" rx="30" fill="#FAF9F5"/>
+            <path d="M22 36L30 20H90L98 36C98 42.5 92.5 47 85.5 47C79 47 74 42.5 72.5 37C71 42.5 66 47 60 47C54 47 49 42.5 47.5 37C46 42.5 41 47 34.5 47C27.5 47 22 42.5 22 36Z" fill="#FF5733"/>
+            <circle cx="44" cy="59" r="8" fill="#FF5733"/>
+            <path d="M30 86C30 74.95 38.95 66 50 66H60V86H30Z" fill="#FF5733"/>
+            <circle cx="76" cy="59" r="8" fill="#0D9488"/>
+            <path d="M90 86C90 74.95 81.05 66 70 66H60V86H90Z" fill="#0D9488"/>
+            <circle cx="60" cy="76" r="5" fill="#FAF9F5"/>
+            <rect x="24" y="90" width="72" height="8" rx="4" fill="#18181B"/>
+          </svg>
+          <span class="font-extrabold text-lg text-white">Booth Buddy</span>
+        </div>
+        <p class="text-stone-400 leading-relaxed">Curated pop-up events and smart booth-sharing built for small brands and local entrepreneurs.</p>
+      </div>
+      <div class="space-y-1.5">
+        <div class="font-bold text-white uppercase tracking-wider">Explore</div>
+        <ul class="space-y-1.5 text-stone-400">
+          <li><button onclick="switchPage('home')" class="hover:text-amber-400">Home</button></li>
+          <li><button onclick="switchPage('events')" class="hover:text-amber-400">Upcoming Events</button></li>
+          <li><button onclick="switchPage('how')" class="hover:text-amber-400">About & How It Works</button></li>
+          <li><button onclick="switchPage('supplies')" class="hover:text-amber-400">Booth Setup Supplies</button></li>
+        </ul>
+      </div>
+      <div class="space-y-1.5">
+        <div class="font-bold text-white uppercase tracking-wider">Merchant Portal</div>
+        <ul class="space-y-1.5 text-stone-400">
+          <li><button onclick="switchPage('auth')" class="hover:text-amber-400">Sign In / Register</button></li>
+          <li><button onclick="switchPage('booking')" class="hover:text-amber-400">My Bookings (Orders)</button></li>
+        </ul>
+      </div>
+      <div class="space-y-1.5">
+        <div class="font-bold text-white uppercase tracking-wider">Get in Touch</div>
+        <p class="text-stone-400">✉️ hello@boothbuddy.ph</p>
+        <p class="text-stone-400">📱 Viber / SMS: 0917 880 4521</p>
+        <p class="text-stone-400">📸 Instagram & TikTok: @boothbuddy.ph</p>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto pt-8 mt-8 border-t border-stone-800 text-[11px] text-stone-500 flex flex-col sm:flex-row justify-between">
+      <span>© 2026 Booth Buddy Events. All rights reserved.</span>
+      <span>Pop-Up Markets — Solo or With a Booth Buddy</span>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT & STATE ENGINE ================= -->
+  <script>
+    // Secret 3-Click Logo Counter
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+
+    function handleLogoTripleClick() {
+      logoClickCount++;
+      clearTimeout(logoClickTimer);
+      if (logoClickCount >= 3) {
+        logoClickCount = 0;
+        switchPage('admin');
+      } else {
+        logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 1200);
+      }
+    }
+
+    // Default Data Structures
+    const DEFAULT_SITE_IMAGES = {
+      heroBanner: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1000&q=80'
+    };
+
+    const DEFAULT_SUPPLIES = [
+      { id: 'sup-1', name: 'White Canopy Tent', priceNote: '+₱400 (Shared) / ₱800 (Solo)', desc: 'Clean, sturdy 2m × 2m pop-up canopy tent set up right at your booth space.', img: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=600&q=80' },
+      { id: 'sup-2', name: 'Folding Display Table', priceNote: '+₱300 / weekend', desc: 'Heavy-duty commercial display table with a neat fitted table cover.', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80' },
+      { id: 'sup-3', name: 'Warm Booth Spotlights', priceNote: '+₱250 / weekend', desc: 'Clip-on warm LED lights to make your merchandise stand out.', img: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80' },
+      { id: 'sup-4', name: 'Display Rack & Chairs', priceNote: '+₱200 / weekend', desc: 'Sturdy garment rack for apparel or a pair of extra merchant chairs.', img: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    const DEFAULT_EVENTS = [
+      { id: 'evt-1', dates: 'Nov 14–15, 2026', title: 'The Weekend Courtyard Collective', venue: 'Open-Air Lifestyle Courtyard', crowd: 'Weekend cafe-goers, young professionals & families', hours: '10:00 AM – 9:00 PM', buddyPackage: 3000, soloPackage: 4400, slotsLeft: 6, status: 'OPEN', img: 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=800&q=80' },
+      { id: 'evt-2', dates: 'Nov 28–29, 2026', title: 'Holiday Makers & Lifestyle Fair', venue: 'Indoor Air-Conditioned Activity Hall', crowd: 'Payday weekend shoppers & gift buyers', hours: '10:00 AM – 9:00 PM', buddyPackage: 3600, soloPackage: 5400, slotsLeft: 3, status: 'ALMOST FULL', img: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80' },
+      { id: 'evt-3', dates: 'Dec 12–13, 2026', title: 'Merry Makers Pop-Up Town', venue: 'Central Community Plaza', crowd: 'Holiday families, students & foodies', hours: '10:00 AM – 10:00 PM', buddyPackage: 3400, soloPackage: 5000, slotsLeft: 10, status: 'OPEN', img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80' }
+    ];
+
+    const DEFAULT_BOOKINGS = [
+      { id: 'BB-2026-101', brand: 'Sunny Sips Specialty Coffee', owner: 'Camille Santos', phone: '0917 555 0192', social: '@sunnysips.ph', category: 'Beverage Only (Coffee, Matcha, Drinks)', items: 'Iced Latte (₱150), Cold Brew (₱160)', eventId: 'evt-1', eventTitle: 'The Weekend Courtyard Collective (Nov 14–15, 2026)', mode: 'Shared Booth Buddy', stall: 'Stall A-01', supplies: ['White Canopy Tent', 'Folding Display Table'], total: 3700, payment: 'GCash', docName: 'BIR_Cert_2303.pdf', productPhotoData: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=300&q=80', status: 'Confirmed & Approved ✓', buddyBrand: 'Butter & Crumb Bakehouse', buddyCategory: 'Food Only (Pastries & Croissants)', buddyDesc: 'Freshly baked flaky croissants, chunky cookies & cinnamon rolls.', buddyOwner: 'Mia Villanueva', buddySocial: '@butterandcrumb.ph' }
+    ];
+
+    const DEFAULT_ADMIN_AUTH = { email: 'admin@boothbuddy.ph', pass: 'admin123' };
+
+    function initStorage() {
+      if (!localStorage.getItem('bb_v6_site_images')) localStorage.setItem('bb_v6_site_images', JSON.stringify(DEFAULT_SITE_IMAGES));
+      if (!localStorage.getItem('bb_v6_supplies')) localStorage.setItem('bb_v6_supplies', JSON.stringify(DEFAULT_SUPPLIES));
+      if (!localStorage.getItem('bb_v6_events')) localStorage.setItem('bb_v6_events', JSON.stringify(DEFAULT_EVENTS));
+      if (!localStorage.getItem('bb_v6_bookings')) localStorage.setItem('bb_v6_bookings', JSON.stringify(DEFAULT_BOOKINGS));
+      if (!localStorage.getItem('bb_v6_admin_auth')) localStorage.setItem('bb_v6_admin_auth', JSON.stringify(DEFAULT_ADMIN_AUTH));
+      if (!localStorage.getItem('bb_v6_current_user')) localStorage.setItem('bb_v6_current_user', JSON.stringify(null));
+    }
+
+    function getCurrentUser() {
+      initStorage();
+      return JSON.parse(localStorage.getItem('bb_v6_current_user'));
+    }
+
+    function renderHeaderAuth() {
+      initStorage();
+      const user = getCurrentUser();
+      const area = document.getElementById('header-auth-area');
+      if (!area) return;
+
+      if (!user) {
+        area.innerHTML = `
+          <button onclick="switchPage('auth')" class="text-xs sm:text-sm font-semibold text-stone-700 hover:text-orange-600 px-3 py-2">Sign In</button>
+          <button onclick="switchPage('auth')" class="bb-gradient-bg hover:opacity-95 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full shadow-md transition">Register →</button>
+        `;
+      } else {
+        area.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-xs bg-amber-100 text-amber-900 font-bold px-3 py-1.5 rounded-full hidden sm:inline">👤 ${user.brand || user.email}</span>
+            <button onclick="handleSignOut()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-3 py-2 rounded-full border border-stone-300 transition">Sign Out</button>
+          </div>
+        `;
+      }
+    }
+
+    // Main Router & Page Switcher
+    function switchPage(pageId) {
+      initStorage();
+      renderHeaderAuth();
+      const container = document.getElementById('app-container');
+      const publicHeader = document.getElementById('public-header');
+      const publicFooter = document.getElementById('public-footer');
+
+      if (pageId === 'admin') {
+        publicHeader.style.display = 'none';
+        publicFooter.style.display = 'none';
+        renderAdminView();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      } else {
+        publicHeader.style.display = 'block';
+        publicFooter.style.display = 'block';
+      }
+
+      if (pageId === 'home') renderHomeView();
+      else if (pageId === 'about' || pageId === 'how') renderAboutAndHowView();
+      else if (pageId === 'events') renderEventsView();
+      else if (pageId === 'matcher') renderMatcherView();
+      else if (pageId === 'supplies') renderSuppliesView();
+      else if (pageId === 'auth') renderAuthView();
+      else if (pageId === 'booking') renderBookingView();
+      else if (pageId === 'checkout') renderCheckoutView();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ================= VIEW 1: HOME =================
+    function renderHomeView() {
+      const siteImgs = JSON.parse(localStorage.getItem('bb_v6_site_images'));
+      const events = JSON.parse(localStorage.getItem('bb_v6_events'));
+      const container = document.getElementById('app-container');
+
+      container.innerHTML = `
+        <section class="relative overflow-hidden py-16 sm:py-24 px-6 border-b border-stone-200/70">
+          <div class="absolute -top-28 left-1/4 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute top-20 right-10 w-80 h-80 bg-teal-200/25 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative">
+            <div class="lg:col-span-6 space-y-6">
+              <div class="inline-flex items-center gap-2 bg-white border border-amber-200 shadow-sm text-stone-700 text-xs font-bold px-4 py-1.5 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span>Curated Pop-Up Markets • Go Solo or Share a Booth</span>
+              </div>
+              <h1 class="text-4xl sm:text-5xl font-extrabold text-stone-900 tracking-tight leading-[1.14]">
+                Your Brand Belongs at Our Next Pop-Up—<span class="bb-gradient-text">Solo or With a Booth Buddy.</span>
+              </h1>
+              <p class="text-stone-600 text-base sm:text-lg leading-relaxed">
+                We organize vibrant, high-energy pop-up bazaars built for growing small businesses. Reserve a full booth on your own, or use our <strong>Booth Buddy Matcher</strong> to share a space and split rental costs with a verified, non-competing brand.
+              </p>
+              <div class="flex flex-wrap gap-3.5 pt-2">
+                <button onclick="switchPage('auth')" class="bb-gradient-bg hover:opacity-95 text-white font-bold px-7 py-3.5 rounded-full shadow-lg transition">Register / Sign In →</button>
+                <button onclick="switchPage('events')" class="bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 font-bold px-6 py-3.5 rounded-full transition">Explore Events</button>
+              </div>
+            </div>
+
+            <div class="lg:col-span-6">
+              <div class="bg-white rounded-3xl p-5 shadow-xl border border-stone-200/80 space-y-5">
+                <div class="relative h-64 sm:h-72 rounded-2xl overflow-hidden bg-stone-100">
+                  <img src="${siteImgs.heroBanner}" alt="Pop-Up Bazaar" class="w-full h-full object-cover" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-stone-950/75 via-stone-950/15 to-transparent flex flex-col justify-end p-6 text-white">
+                    <span class="bb-gradient-bg text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full w-fit mb-2">Organized by Booth Buddy</span>
+                    <p class="text-xl font-extrabold">Curated Venues • Great Crowds • Supportive Community</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Events Glimpse -->
+        <section class="py-16 px-6 max-w-7xl mx-auto space-y-8">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-700">Upcoming Pop-Ups</span>
+              <h2 class="text-3xl font-extrabold text-stone-900 mt-1">Featured Event Lineup</h2>
+            </div>
+            <button onclick="switchPage('events')" class="bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs px-5 py-3 rounded-full transition">View Full Events & Schedules →</button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            ${events.map(ev => `
+              <article class="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                <div>
+                  <div class="relative h-44 bg-stone-100"><img src="${ev.img}" alt="${ev.title}" class="w-full h-full object-cover" /><span class="absolute top-3 left-3 bg-white/95 text-orange-600 text-[11px] font-extrabold px-3 py-1 rounded-full shadow">${ev.dates}</span></div>
+                  <div class="p-6 space-y-2"><h3 class="text-lg font-extrabold text-stone-900">${ev.title}</h3><p class="text-xs text-stone-500">📍 ${ev.venue}</p></div>
+                </div>
+                <div class="px-6 py-4 bg-stone-50 border-t border-stone-100 flex items-center justify-between">
+                  <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-teal-100 text-teal-800">● ${ev.status} (${ev.slotsLeft} left)</span>
+                  <button onclick="switchPage('events')" class="text-xs font-extrabold text-orange-600 hover:underline">See Details & Book →</button>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    // ================= VIEW 2: ABOUT & HOW IT WORKS (COMBINED PER REQUEST) ================= -->
+    function renderAboutAndHowView() {
+      document.getElementById('app-container').innerHTML = `
+        <main class="flex-1 py-14 px-6 max-w-6xl mx-auto space-y-14">
+          <!-- About Section -->
+          <div class="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-sm space-y-4">
+            <span class="bg-orange-100 text-orange-800 text-xs font-extrabold px-3.5 py-1 rounded-full uppercase">About Booth Buddy</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-stone-900">Built to Help Small Brands Pop Up Without the Heavy Cost.</h1>
+            <p class="text-sm sm:text-base text-stone-600 leading-relaxed">
+              Booth Buddy is a dedicated pop-up event organizer for micro, small, and student entrepreneurs. We personally scout, lease, and organize every event on our calendar—giving you the choice to book a Solo Booth or split a stall with a compatible Booth Buddy.
+            </p>
+          </div>
+
+          <!-- How It Works Section -->
+          <div class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+              <span class="bg-teal-100 text-teal-800 text-xs font-extrabold px-3.5 py-1 rounded-full uppercase">Step-by-Step Guide</span>
+              <h2 class="text-3xl font-extrabold text-stone-900">How It Works for Merchants</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+              <div class="bg-white p-7 rounded-3xl border border-stone-200 space-y-2">
+                <strong class="text-orange-600 text-base">1. Register / Sign In via Gmail OTP</strong>
+                <p class="text-stone-600">Sign in securely with your Gmail address. Enter the simulated 6-digit OTP code sent to your inbox to access the merchant dashboard.</p>
+              </div>
+              <div class="bg-white p-7 rounded-3xl border border-stone-200 space-y-2">
+                <strong class="text-amber-700 text-base">2. Choose an Event & Booth Option</strong>
+                <p class="text-stone-600">Browse upcoming events, select your stall, and choose either Solo Booth or Shared Booth Buddy to split costs.</p>
+              </div>
+              <div class="bg-white p-7 rounded-3xl border border-stone-200 space-y-2">
+                <strong class="text-teal-700 text-base">3. List Products, Upload Permit & Pay</strong>
+                <p class="text-stone-600">List your specific product items and prices (preventing co-conspirators), upload your business permit/ID and promotional product photos, select optional booth setup supplies, and complete payment via GCash, Maya, or bank transfer.</p>
+              </div>
+              <div class="bg-white p-7 rounded-3xl border border-stone-200 space-y-2">
+                <strong class="text-indigo-600 text-base">4. Track Status & Meet Your Buddy</strong>
+                <p class="text-stone-600">Wait for admin verification. Once approved, open <strong>My Bookings</strong> to track your confirmed status and unlock your matched Booth Buddy's brand profile!</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      `;
+    }
+
+    // ================= VIEW 3: EVENTS (WITH DIRECT "BOOK THIS EVENT" CTA) ================= -->
+    function renderEventsView() {
+      const events = JSON.parse(localStorage.getItem('bb_v6_events'));
+      document.getElementById('app-container').innerHTML = `
+        <main class="flex-1 py-14 px-6 max-w-7xl mx-auto space-y-10">
+          <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="bg-orange-100 text-orange-800 text-xs font-extrabold px-3.5 py-1 rounded-full uppercase">Official Lineup</span>
+              <h1 class="text-3xl font-extrabold text-stone-900 mt-2">Upcoming Booth Buddy Pop-Up Events</h1>
+            </div>
+            <button onclick="switchPage('auth')" class="bb-gradient-bg text-white font-bold text-xs px-6 py-3 rounded-full shadow-sm">Register to Book →</button>
+          </div>
+          <div class="space-y-6">
+            ${events.map(ev => `
+              <article class="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm grid grid-cols-1 lg:grid-cols-12">
+                <div class="lg:col-span-4 h-56 bg-stone-100"><img src="${ev.img}" alt="${ev.title}" class="w-full h-full object-cover" /></div>
+                <div class="lg:col-span-8 p-6 sm:p-8 flex flex-col justify-between space-y-4">
+                  <div class="space-y-1.5">
+                    <span class="bg-amber-100 text-amber-900 text-xs font-extrabold px-3 py-1 rounded-full">${ev.dates}</span>
+                    <h2 class="text-2xl font-extrabold text-stone-900 pt-1">${ev.title}</h2>
+                    <p class="text-xs sm:text-sm text-stone-600">📍 <strong>Venue:</strong> ${ev.venue} • 👥 <strong>Crowd:</strong> ${ev.crowd}</p>
+                    <p class="text-xs text-stone-500">⏰ <strong>Hours:</strong> ${ev.hours}</p>
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-stone-100 text-xs">
+                    <div class="flex gap-6">
+                      <div><span class="text-stone-400 block">Shared Booth Buddy</span><strong class="text-base text-teal-700">₱${ev.buddyPackage.toLocaleString()}</strong></div>
+                      <div><span class="text-stone-400 block">Solo Booth</span><strong class="text-base text-stone-900">₱${ev.soloPackage.toLocaleString()}</strong></div>
+                    </div>
+                    <button onclick="selectEventForBooking('${ev.id}')" class="bb-gradient-bg text-white font-bold px-6 py-3 rounded-full shadow-sm">Book This Event →</button>
+                  </div>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </main>
+      `;
+    }
+
+    function selectEventForBooking(evtId) {
+      const user = getCurrentUser();
+      if (!user) {
+        alert('Please sign in or register first before booking an event.');
+        switchPage('auth');
+      } else {
+        switchPage('checkout');
+        setTimeout(() => {
+          const sel = document.getElementById('f-event');
+          if (sel) sel.value = evtId;
+          updateBookingTotal();
+        }, 50);
+      }
+    }
+
+    // ================= VIEW 4: BOOTH MATCHER (DUAL STATE: PUBLIC VS LOGGED-IN) ================= -->
+    function renderMatcherView() {
+      const user = getCurrentUser();
+      const container = document.getElementById('app-container');
+
+      if (!user) {
+        container.innerHTML = `
+          <main class="flex-1 py-14 px-6 max-w-5xl mx-auto space-y-8">
+            <div class="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-sm text-center space-y-6">
+              <span class="bg-amber-100 text-amber-900 text-xs font-extrabold px-3.5 py-1 rounded-full uppercase">Interactive Preview</span>
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-stone-900">Explore How the Booth Buddy Matcher Works</h1>
+              <p class="text-sm sm:text-base text-stone-600 max-w-2xl mx-auto leading-relaxed">
+                Our smart matching engine pairs complementary brands while blocking direct competitors. <strong>Sign in to your account</strong> to see all compatible brands matched with your specific product category!
+              </p>
+              <div class="pt-2">
+                <button onclick="switchPage('auth')" class="bb-gradient-bg text-white font-bold px-8 py-4 rounded-full shadow-lg">Sign In or Register to View Compatible Brands →</button>
+              </div>
+            </div>
+          </main>
+        `;
+      } else {
+        container.innerHTML = `
+          <main class="flex-1 py-14 px-6 max-w-6xl mx-auto space-y-8">
+            <div class="bg-stone-900 text-white rounded-3xl p-8 shadow-xl space-y-6">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <span class="bg-teal-500/20 text-teal-300 text-xs font-bold px-3 py-1 rounded-full uppercase">Logged-In View • Registered Category: ${user.category}</span>
+                  <h1 class="text-2xl sm:text-3xl font-extrabold mt-2">Compatible Booth Buddies for ${user.brand}</h1>
+                </div>
+                <button onclick="switchPage('checkout')" class="bb-gradient-bg text-white font-bold text-xs px-5 py-3 rounded-full shadow-sm">Proceed to Booking →</button>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
+                <div class="bg-white text-stone-900 rounded-2xl p-5 shadow space-y-2 border-2 border-amber-400">
+                  <div class="flex justify-between font-extrabold text-orange-600"><span>Stall A-01</span><span class="bg-teal-100 text-teal-800 px-2.5 py-0.5 rounded-full">✓ COMPATIBLE MATCH</span></div>
+                  <div class="text-base font-extrabold">Butter & Crumb Bakehouse</div>
+                  <div class="text-stone-500">Category: 🥐 Food Only (Pastries)</div>
+                  <p class="text-teal-700 font-bold pt-1">Why it works: Perfect beverage + pastry synergy!</p>
+                  <button onclick="switchPage('checkout')" class="mt-2 bb-gradient-bg text-white font-bold px-4 py-2 rounded-full w-full">Request Stall A-01 →</button>
+                </div>
+                <div class="bg-stone-800 border border-stone-700 text-white rounded-2xl p-5 space-y-2 opacity-75">
+                  <div class="flex justify-between font-bold text-amber-300"><span>Stall A-02</span><span>🚫 UNAVAILABLE</span></div>
+                  <div class="text-base font-bold">Uji Matcha Bar</div>
+                  <div class="text-stone-400">Category: 🧋 Beverage Only</div>
+                  <p class="text-stone-400 font-semibold pt-1">✗ Blocked: Same beverage category.</p>
+                </div>
+                <div class="bg-stone-800 border border-stone-600 text-white rounded-2xl p-5 space-y-2">
+                  <div class="flex justify-between font-bold text-teal-400"><span>Stall A-03</span><span>🟢 OPEN BOOTH</span></div>
+                  <div class="text-base font-bold">Empty Stall Space</div>
+                  <div class="text-stone-300">Available to start a new shared pair</div>
+                  <button onclick="switchPage('checkout')" class="mt-2 bg-teal-600 text-white font-bold px-4 py-2 rounded-full w-full">Book Stall A-03 →</button>
+                </div>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+    }
+
+    // ================= VIEW 5: BOOTH SUPPLIES =================
+    function renderSuppliesView() {
+      initStorage();
+      const supplies = JSON.parse(localStorage.getItem('bb_v6_supplies'));
+      document.getElementById('app-container').innerHTML = `
+        <main class="flex-1 py-14 px-6 max-w-7xl mx-auto space-y-8">
+          <div class="bg-white rounded-3xl border border-stone-200 p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-2 max-w-2xl">
+              <span class="bg-amber-100 text-amber-900 text-xs font-extrabold px-3.5 py-1 rounded-full uppercase">Setup Add-Ons</span>
+              <h1 class="text-3xl font-extrabold text-stone-900">Booth Setup Supplies Catalog</h1>
+              <p class="text-sm text-stone-600">Select any setup supplies below when booking your booth and our team will have them ready at your stall before ingress starts.</p>
+            </div>
+            <button onclick="switchPage('auth')" class="bb-gradient-bg text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-full shadow-md shrink-0">Book Booth & Add Supplies →</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            ${supplies.map(s => `
+              <div class="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
+                <div>
+                  <img src="${s.img}" alt="${s.name}" class="w-full h-48 object-cover bg-stone-100" />
+                  <div class="p-6 space-y-2">
+                    <span class="text-xs font-extrabold text-orange-600">${s.priceNote}</span>
+                    <h2 class="font-extrabold text-lg text-stone-900">${s.name}</h2>
+                    <p class="text-xs text-stone-500 leading-relaxed">${s.desc}</p>
+                  </div>
+                </div>
+                <div class="px-6 py-4 bg-stone-50 border-t border-stone-100">
+                  <button onclick="switchPage('auth')" class="text-xs font-extrabold text-teal-700 hover:underline">Select in Booking Form →</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </main>
+      `;
+    }
+
+    // ================= VIEW 6: SIGN IN / REGISTER WITH GMAIL OTP ================= -->
+    function renderAuthView() {
+      document.getElementById('app-container').innerHTML = `
+        <main class="flex-1 py-14 px-6">
+          <div class="max-w-md mx-auto bg-white rounded-3xl border border-stone-200 shadow-xl p-8 space-y-6">
+            <div class="text-center space-y-2">
+              <span class="bg-orange-100 text-orange-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Merchant Portal</span>
+              <h1 class="text-2xl font-extrabold text-stone-900">Register / Sign In</h1>
+              <p class="text-xs text-stone-500">Enter your Gmail address to receive a simulated 6-digit OTP verification code.</p>
+            </div>
+
+            <!-- Stage A: Email Input -->
+            <div id="auth-stage-1" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-stone-700 mb-1">Gmail / Email Address *</label>
+                <input type="email" id="auth-email-input" placeholder="e.g. sunnysips@gmail.com" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm" />
+              </div>
+              <button onclick="triggerGmailOTP()" class="w-full bb-gradient-bg text-white font-extrabold text-sm py-3.5 rounded-full shadow-md">
+                Send 6-Digit OTP Code to Gmail →
+              </button>
+            </div>
+
+            <!-- Stage B: OTP Verification Input -->
+            <div id="auth-stage-2" class="hidden space-y-4">
+              <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-900 text-center">
+                ✓ Verification code sent to <strong id="sent-to-email"></strong>.<br/>
+                <span>(Demo OTP Code is: <strong>123456</strong>)</span>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-stone-700 mb-1">Enter 6-Digit OTP Code *</label>
+                <input type="text" id="auth-otp-input" placeholder="123456" maxlength="6" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm text-center font-mono tracking-widest text-lg" />
+              </div>
+              <button onclick="verifyGmailOTP()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-sm py-3.5 rounded-full shadow-md">
+                Verify OTP & Continue to Booking Form →
+              </button>
+            </div>
+          </div>
+        </main>
+      `;
+    }
+
+    function triggerGmailOTP() {
+      const email = document.getElementById('auth-email-input').value;
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      document.getElementById('sent-to-email').textContent = email;
+      document.getElementById('auth-stage-1').classList.add('hidden');
+      document.getElementById('auth-stage-2').classList.remove('hidden');
+    }
+
+    function verifyGmailOTP() {
+      const code = document.getElementById('auth-otp-input').value;
+      if (code !== '123456') {
+        alert('Invalid OTP code. Please enter 123456 for this demo.');
+        return;
+      }
+      const email = document.getElementById('auth-email-input').value;
+      localStorage.setItem('bb_v6_current_user', JSON.stringify({ email, brand: 'My Brand', category: 'Beverage Only (Coffee, Matcha, Drinks)' }));
+      renderHeaderAuth();
+      switchPage('checkout');
+    }
+
+    function handleSignOut() {
+      localStorage.setItem('bb_v6_current_user', JSON.stringify(null));
+      renderHeaderAuth();
+      switchPage('home');
+    }
+
+    // ================= VIEW 7: CHECKOUT & BOOKING FORM (WITH PRODUCT ITEMS, PERMIT & PAYMENT) ================= -->
+    function renderCheckoutView() {
+      const user = getCurrentUser();
+      if (!user) {
+        alert('Please sign in first.');
+        switchPage('auth');
+        return;
+      }
+      const events = JSON.parse(localStorage.getItem('bb_v6_events'));
+      document.getElementById('app-container').innerHTML = `
+        <main class="flex-1 py-14 px-6">
+          <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-stone-200 shadow-xl overflow-hidden">
+            <div class="bb-gradient-bg text-white p-7 sm:p-8">
+              <span class="bg-black/15 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Signed In: ${user.email}</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold mt-2">Booth Booking & Product Inventory</h1>
+              <p class="text-xs sm:text-sm text-white/95 mt-1">List your specific product items, upload your permit and promotional photo, and complete payment via GCash, Maya, or Bank Transfer.</p>
+            </div>
+
+            <form id="merchant-booking-form" onsubmit="submitMerchantBooking(event)" class="p-6 sm:p-8 space-y-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Brand / Shop Name *</label>
+                  <input type="text" id="f-brand" required placeholder="e.g., Sunny Sips Coffee" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Owner / Contact Person *</label>
+                  <input type="text" id="f-owner" required placeholder="Enter full name" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Mobile Number (Viber / SMS) *</label>
+                  <input type="tel" id="f-phone" required placeholder="09XX XXX XXXX" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Instagram / Facebook Page Link *</label>
+                  <input type="text" id="f-social" required placeholder="@yourbrand" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Primary Product Category *</label>
+                  <select id="f-category" class="w-full border-2 border-amber-300 rounded-xl px-3 py-2.5 text-sm font-semibold bg-amber-50/30">
+                    <option value="Beverage Only (Coffee, Matcha, Drinks)">Beverage Only (Coffee, Matcha, Drinks)</option>
+                    <option value="Food Only (Pastries, Snacks, Desserts)">Food Only (Pastries, Snacks, Desserts)</option>
+                    <option value="Food & Beverage (Combo Meals, Snacks + Drinks)">Food & Beverage (Snacks + Drinks)</option>
+                    <option value="Fashion & Apparel (Clothing, Activewear, Thrift)">Fashion & Apparel (Clothing, Thrift)</option>
+                    <option value="General Merch & Anik-Aniks (Keychains, Stickers, Gifts)">General Merch & Anik-Aniks</option>
+                    <option value="Footwear, Bags & Leather Goods">Footwear, Bags & Leather Goods</option>
+                    <option value="Jewelry, Charms & Fashion Accessories">Jewelry, Charms & Accessories</option>
+                    <option value="Beauty, Skincare, Cosmetics & Press-On Nails">Beauty, Skincare, Cosmetics & Press-On Nails</option>
+                    <option value="Perfumes, Scented Candles & Home Fragrances">Perfumes & Scented Candles</option>
+                    <option value="Arts, Crafts, Crochet & Stationery">Arts, Crafts, Crochet & Stationery</option>
+                    <option value="Gadgets, Phone Cases & Tech Accessories">Gadgets & Tech Accessories</option>
+                    <option value="Pet Apparel, Treats & Accessories">Pet Apparel & Treats</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Choose Upcoming Event *</label>
+                  <select id="f-event" onchange="updateBookingTotal()" class="w-full border border-stone-300 rounded-xl px-3 py-2.5 text-sm font-semibold">
+                    ${events.map(ev => `<option value="${ev.id}" data-solo="${ev.soloPackage}" data-buddy="${ev.buddyPackage}">${ev.title} (${ev.dates})</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Booth Option *</label>
+                  <select id="f-mode" onchange="updateBookingTotal()" class="w-full border border-teal-300 rounded-xl px-3 py-2.5 text-sm font-bold text-teal-900 bg-teal-50/50">
+                    <option value="Shared Booth Buddy">🤝 Share with a Booth Buddy</option>
+                    <option value="Solo Booth">⛺ Solo Booth (Full Space)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Product Inventory & Items List -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-stone-700">List Your Specific Product Items & Price Range *</label>
+                <textarea id="f-items" required rows="2" placeholder="e.g., Iced Oat Latte (₱150), Spanish Latte (₱140), Cold Brew (₱160)" class="w-full border border-stone-300 rounded-xl p-3 text-sm"></textarea>
+                <span class="text-[11px] text-stone-400">Required to prevent hidden co-conspirators in shared booths.</span>
+              </div>
+
+              <!-- Optional Supplies Checkboxes -->
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-stone-700">Select Optional Booth Setup Supplies Needed:</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                  <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer">
+                    <span class="flex items-center gap-2"><input type="checkbox" class="supply-chk accent-orange-600" value="White Canopy Tent" data-price="400" onchange="updateBookingTotal()" checked /> ⛺ White Canopy Tent</span>
+                    <strong class="text-orange-600">+₱400</strong>
+                  </label>
+                  <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer">
+                    <span class="flex items-center gap-2"><input type="checkbox" class="supply-chk accent-orange-600" value="Folding Display Table" data-price="300" onchange="updateBookingTotal()" checked /> 🪑 Folding Display Table</span>
+                    <strong class="text-orange-600">+₱300</strong>
+                  </label>
+                  <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer">
+                    <span class="flex items-center gap-2"><input type="checkbox" class="supply-chk accent-orange-600" value="Warm Booth Spotlights" data-price="250" onchange="updateBookingTotal()" /> 💡 Warm Booth Spotlights</span>
+                    <strong class="text-orange-600">+₱250</strong>
+                  </label>
+                  <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer">
+                    <span class="flex items-center gap-2"><input type="checkbox" class="supply-chk accent-orange-600" value="Display Rack & Extra Chairs" data-price="200" onchange="updateBookingTotal()" /> 🧥 Display Rack & Extra Chairs</span>
+                    <strong class="text-orange-600">+₱200</strong>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Upload Document & Product Promotion Photo (With Consent) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Upload Business Permit (BIR/DTI) or Valid ID *</label>
+                  <input type="file" id="f-doc-file" required onchange="handleFileConversion(this, 'f-doc-val')" class="w-full text-xs text-stone-600 border border-dashed border-stone-300 rounded-xl p-2.5 bg-stone-50" />
+                  <input type="hidden" id="f-doc-val" value="Business_Permit.pdf" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-stone-700 mb-1">Upload Product Promo Photo (For Social Media Ads) *</label>
+                  <input type="file" id="f-prod-file" accept="image/*" required onchange="handleFileConversion(this, 'f-prod-val')" class="w-full text-xs text-stone-600 border border-dashed border-stone-300 rounded-xl p-2.5 bg-stone-50" />
+                  <input type="hidden" id="f-prod-val" value="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=300&q=80" />
+                  <span class="text-[10px] text-teal-700 font-semibold">✓ Includes consent to use product photo for organizer social media marketing.</span>
+                </div>
+              </div>
+
+              <!-- Payment Method with Large Logos & Accounts -->
+              <div class="space-y-3 pt-2">
+                <label class="block text-xs font-bold text-stone-700">Select Payment Method & Transfer to Account *</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <label class="border-2 border-orange-400 bg-orange-50/40 p-3.5 rounded-2xl flex flex-col items-center gap-2 cursor-pointer text-center">
+                    <span class="text-2xl">📱</span>
+                    <strong class="text-stone-900">GCash Transfer</strong>
+                    <span class="text-[11px] text-stone-600 font-mono font-bold">0917-880-4521<br/>(Jerome L.)</span>
+                    <input type="radio" name="pay_method" value="GCash" checked class="accent-orange-600" />
+                  </label>
+                  <label class="border border-stone-300 hover:border-teal-400 bg-white p-3.5 rounded-2xl flex flex-col items-center gap-2 cursor-pointer text-center">
+                    <span class="text-2xl">📲</span>
+                    <strong class="text-stone-900">Maya Transfer</strong>
+                    <span class="text-[11px] text-stone-600 font-mono font-bold">0917-880-4521<br/>(Jerome L.)</span>
+                    <input type="radio" name="pay_method" value="Maya" class="accent-orange-600" />
+                  </label>
+                  <label class="border border-stone-300 hover:border-teal-400 bg-white p-3.5 rounded-2xl flex flex-col items-center gap-2 cursor-pointer text-center">
+                    <span class="text-2xl">🏦</span>
+                    <strong class="text-stone-900">BPI / Bank Transfer</strong>
+                    <span class="text-[11px] text-stone-600 font-mono font-bold">0019-2839-48<br/>(Booth Buddy PH)</span>
+                    <input type="radio" name="pay_method" value="Bank Transfer" class="accent-orange-600" />
+                  </label>
+                </div>
+
+                <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 text-center space-y-2">
+                  <div class="text-xs font-bold text-stone-800">Scan QR Code to Pay via GCash / Maya:</div>
+                  <img src="https://quickchart.io/qr?size=150x150&text=BOOTH_BUDDY_PAYMENT_09178804521" alt="Payment QR" class="mx-auto rounded-xl border border-stone-200 shadow-sm" />
+                  <div class="text-[11px] text-stone-400">Upload transfer screenshot or reference number below.</div>
+                  <input type="text" id="f-ref" required placeholder="Enter Payment Ref No. or upload screenshot" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs text-center" />
+                </div>
+              </div>
+
+              <div class="bg-stone-900 text-white p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <span class="text-xs text-stone-300">Total Amount Due:</span>
+                  <div id="booking-total-display" class="text-2xl font-extrabold text-amber-400">₱3,700.00</div>
+                </div>
+                <button type="submit" class="w-full sm:w-auto bb-gradient-bg text-white font-extrabold text-sm px-8 py-4 rounded-full shadow-lg transition">
+                  Submit Application for Review →
+                </button>
+              </div>
+            </form>
+          </div>
+        </main>
+      `;
+      updateBookingTotal();
+    }
+
+    function handleFileConversion(fileInput, hiddenTargetId) {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById(hiddenTargetId).value = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateBookingTotal() {
+      const eventSelect = document.getElementById('f-event');
+      if (!eventSelect || !eventSelect.options.length) return 0;
+      const selectedOpt = eventSelect.options[eventSelect.selectedIndex];
+      const mode = document.getElementById('f-mode').value;
+      const baseCost = mode === 'Solo Booth'
+        ? parseInt(selectedOpt.getAttribute('data-solo'), 10)
+        : parseInt(selectedOpt.getAttribute('data-buddy'), 10);
+
+      let suppliesCost = 0;
+      document.querySelectorAll('.supply-chk:checked').forEach(chk => {
+        suppliesCost += parseInt(chk.getAttribute('data-price'), 10);
+      });
+
+      const total = baseCost + suppliesCost;
+      const display = document.getElementById('booking-total-display');
+      if (display) display.textContent = '₱' + total.toLocaleString() + '.00';
+      return total;
+    }
+
+    function submitMerchantBooking(e) {
+      e.preventDefault();
+      const brand = document.getElementById('f-brand').value;
+      const owner = document.getElementById('f-owner').value;
+      const phone = document.getElementById('f-phone').value;
+      const social = document.getElementById('f-social').value;
+      const category = document.getElementById('f-category').value;
+      const items = document.getElementById('f-items').value;
+      const eventSelect = document.getElementById('f-event');
+      const eventId = eventSelect.value;
+      const eventTitle = eventSelect.options[eventSelect.selectedIndex].text;
+      const mode = document.getElementById('f-mode').value;
+      const docName = document.getElementById('f-doc-val').value;
+      const productPhotoData = document.getElementById('f-prod-val').value;
+      const payment = document.querySelector('input[name="pay_method"]:checked').value + ' (Ref: ' + document.getElementById('f-ref').value + ')';
+      const total = updateBookingTotal();
+
+      const supplies = [];
+      document.querySelectorAll('.supply-chk:checked').forEach(chk => supplies.push(chk.value));
+
+      const buddyInfo = getComplementaryBuddy(category);
+
+      const newBooking = {
+        id: 'BB-2026-' + Math.floor(100 + Math.random() * 900),
+        brand, owner, phone, social, category, items, eventId, eventTitle, mode, supplies, total, payment,
+        docName, productPhotoData,
+        stall: mode === 'Solo Booth' ? 'Stall S-04 (Solo)' : buddyInfo.stall,
+        status: 'Pending Review',
+        buddyBrand: mode === 'Solo Booth' ? 'Solo Booth (Full Space)' : buddyInfo.brand,
+        buddyCategory: mode === 'Solo Booth' ? 'Solo Stall' : buddyInfo.cat,
+        buddyDesc: mode === 'Solo Booth' ? 'Reserved full booth footprint.' : buddyInfo.desc,
+        buddyOwner: mode === 'Solo Booth' ? owner : buddyInfo.owner,
+        buddySocial: mode === 'Solo Booth' ? social : buddyInfo.social
+      };
+
+      const bookings = JSON.parse(localStorage.getItem('bb_v6_bookings') || '[]');
+      bookings.unshift(newBooking);
+      localStorage.setItem('bb_v6_bookings', JSON.stringify(bookings));
+
+      switchPage('booking');
+    }
+
+    function getComplementaryBuddy(category) {
+      if (category.includes('Beverage')) return { brand: 'Butter & Crumb Bakehouse', cat: 'Food Only (Pastries)', desc: 'Croissants & cookies', owner: 'Mia V.', social: '@butterandcrumb', stall: 'Stall A-01' };
+      if (category.includes('Fashion')) return { brand: 'Gloss & Glam Nails', cat: 'Beauty & Press-On Nails', desc: 'Custom press-ons', owner: 'Chloe T.', social: '@glossandglam', stall: 'Stall B-04' };
+      if (category.includes('Food')) return { brand: 'Brewed Awakening Coffee', cat: 'Beverage Only', desc: 'Cold brew & lattes', owner: 'Liam C.', social: '@brewedawakening', stall: 'Stall A-05' };
+      return { brand: 'Cozy Loops Crochet', cat: 'Arts & Crafts', desc: 'Handmade crochet', owner: 'Hannah G.', social: '@cozyloops', stall: 'Stall C-02' };
+    }
+
+    // ================= VIEW 8: MY BOOKINGS (SALAYSAY LAHI "MY ORDERS" STYLE) ================= -->
+    function renderBookingView() {
+      initStorage();
+      const bookings = JSON.parse(localStorage.getItem('bb_v6_bookings') || '[]');
+      const container = document.getElementById('app-container');
+
+      if (bookings.length === 0) {
+        container.innerHTML = `
+          <main class="flex-1 py-14 px-6 max-w-4xl mx-auto text-center space-y-4">
+            <h1 class="text-2xl font-extrabold text-stone-900">My Bookings Dashboard</h1>
+            <p class="text-sm text-stone-500">You haven't submitted any event booth bookings yet.</p>
+            <button onclick="switchPage('events')" class="bb-gradient-bg text-white font-bold text-xs px-6 py-3 rounded-full">Browse Events & Book →</button>
+          </main>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <main class="flex-1 py-14 px-6 max-w-5xl mx-auto space-y-8">
+          <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="bg-teal-100 text-teal-800 text-xs font-extrabold px-3.5 py-1 rounded-full uppercase">Merchant Portal</span>
+              <h1 class="text-3xl font-extrabold text-stone-900 mt-2">My Bookings & Application Status</h1>
+              <p class="text-xs text-stone-500">Track your submitted event booths, review statuses, and unlocked Booth Buddy matches.</p>
+            </div>
+            <button onclick="switchPage('events')" class="bb-gradient-bg text-white font-bold text-xs px-5 py-3 rounded-full shrink-0">Book Another Event →</button>
+          </div>
+
+          <div class="space-y-6">
+            ${bookings.map(b => {
+              const badgeClass = b.status.includes('Approved')
+                ? 'bg-emerald-100 text-emerald-800'
+                : 'bg-amber-100 text-amber-900';
+
+              return `
+                <div class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-4">
+                    <div>
+                      <span class="text-xs font-bold uppercase text-stone-400">Ref: #${b.id}</span>
+                      <h2 class="text-xl font-extrabold text-stone-900 mt-0.5">${b.eventTitle}</h2>
+                    </div>
+                    <span class="text-xs font-extrabold px-3.5 py-1.5 rounded-full ${badgeClass} w-fit">● Status: ${b.status}</span>
+                  </div>
+
+                  ${b.status.includes('Pending') ? `
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center space-y-2">
+                      <strong class="text-amber-900 text-sm">⏳ Application Under Review by Admin</strong>
+                      <p class="text-xs text-amber-800 max-w-lg mx-auto">Our team is currently inspecting your uploaded business permit and product list. Once approved, your assigned stall and your matched Booth Buddy profile will unlock here instantly!</p>
+                    </div>
+                  ` : `
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs">
+                      <div class="lg:col-span-7 bg-teal-50/50 rounded-2xl border-2 border-teal-500 p-6 space-y-3">
+                        <span class="bg-teal-700 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">🤝 Unlocked Matched Booth Buddy</span>
+                        <h3 class="text-lg font-extrabold text-stone-900">${b.buddyBrand} (${b.stall})</h3>
+                        <p class="text-stone-600">Category: <strong>${b.buddyCategory}</strong></p>
+                        <p class="text-stone-600 leading-relaxed">"${b.buddyDesc}"</p>
+                        <p class="text-teal-900 font-semibold pt-1">Contact Owner: ${b.buddyOwner} (${b.buddySocial})</p>
+                      </div>
+                      <div class="lg:col-span-5 bg-stone-50 rounded-2xl border border-stone-200 p-6 space-y-2">
+                        <h3 class="font-extrabold text-stone-900 border-b border-stone-100 pb-2">Your Booking Summary</h3>
+                        <div class="flex justify-between"><span>Brand:</span><strong>${b.brand}</strong></div>
+                        <div class="flex justify-between"><span>Products:</span><strong>${b.items}</strong></div>
+                        <div class="flex justify-between"><span>Booth Option:</span><strong class="text-teal-700">${b.mode}</strong></div>
+                        <div class="flex justify-between"><span>Supplies:</span><strong>${b.supplies.join(', ') || 'None'}</strong></div>
+                        <div class="flex justify-between"><span>Payment:</span><strong>${b.payment}</strong></div>
+                        <div class="flex justify-between pt-2 border-t font-extrabold text-sm text-stone-900"><span>Total Paid:</span><span class="text-orange-600">₱${b.total.toLocaleString()}.00</span></div>
+                      </div>
+                    </div>
+                  `}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </main>
+      `;
+    }
+
+    // ================= VIEW 9: SECRET ORGANIZER ADMIN PORTAL (WITH FILE PREVIEWS & CRUD) ================= -->
+    function renderAdminView() {
+      initStorage();
+      const bookings = JSON.parse(localStorage.getItem('bb_v6_bookings') || '[]');
+      const events = JSON.parse(localStorage.getItem('bb_v6_events') || '[]');
+      const supplies = JSON.parse(localStorage.getItem('bb_v6_supplies') || '[]');
+      const auth = JSON.parse(localStorage.getItem('bb_v6_admin_auth'));
+      const container = document.getElementById('app-container');
+
+      container.innerHTML = `
+        <main class="flex-1 py-12 px-6 bg-stone-100 max-w-7xl mx-auto w-full space-y-8">
+          <div class="bg-stone-900 text-white p-6 rounded-3xl flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Secret Admin Mode Active</span>
+              <h1 class="text-2xl font-extrabold mt-1">Booth Buddy Organizer Control Center</h1>
+            </div>
+            <div class="flex items-center gap-3 text-xs">
+              <button onclick="resetDemoData()" class="bg-stone-800 text-stone-300 font-bold px-4 py-2.5 rounded-full border border-stone-700">Reset Default Data</button>
+              <button onclick="switchPage('home')" class="bb-gradient-bg text-white font-bold px-5 py-2.5 rounded-full">Exit Admin to Public Site →</button>
+            </div>
+          </div>
+
+          <!-- Section 1: Merchant Applications & Document Inspector -->
+          <section class="bg-white rounded-3xl border border-stone-200 p-6 space-y-4 shadow-sm">
+            <div class="border-b border-stone-100 pb-4">
+              <span class="text-xs font-bold uppercase text-orange-600">1. Merchant Application Review</span>
+              <h2 class="text-xl font-extrabold text-stone-900">Inspect Permits, Product Inventory, Promo Photos & Approve Bookings</h2>
+            </div>
+            <div id="admin-bookings-list" class="space-y-3">
+              ${bookings.map((b, idx) => `
+                <div class="p-5 rounded-2xl border border-stone-200 bg-stone-50 flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-xs">
+                  <div class="space-y-1.5 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="font-extrabold text-sm text-stone-900">${b.brand}</span>
+                      <span class="bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full">${b.category}</span>
+                      <span class="bg-teal-100 text-teal-800 font-bold px-2.5 py-0.5 rounded-full">${b.status}</span>
+                    </div>
+                    <div class="text-stone-600"><strong>Owner:</strong> ${b.owner} (${b.phone} • ${b.social}) | <strong>Event:</strong> ${b.eventTitle}</div>
+                    <div class="text-stone-600"><strong>Product Items:</strong> <span class="text-orange-600 font-semibold">${b.items}</span></div>
+                    <div class="text-stone-600"><strong>Booth Option:</strong> ${b.stall} (${b.mode}) | <strong>Payment:</strong> ${b.payment} (₱${b.total.toLocaleString()})</div>
+                    <div class="pt-2 flex items-center gap-3">
+                      <a href="${b.productPhotoData}" target="_blank" class="inline-flex items-center gap-2 bg-white border border-stone-300 font-bold px-3 py-1.5 rounded-lg hover:border-orange-500">
+                        <img src="${b.productPhotoData}" alt="Promo" class="w-6 h-6 rounded object-cover" />
+                        <span>View Promo Photo (Social Media Consent ✓)</span>
+                      </a>
+                      <a href="${b.productPhotoData}" target="_blank" class="bg-white border border-stone-300 font-bold px-3 py-1.5 rounded-lg hover:border-orange-500">
+                        📄 View Uploaded Permit/ID (${b.docName || 'Document'})
+                      </a>
+                    </div>
+                  </div>
+                  <div class="shrink-0">
+                    <button onclick="approveBooking(${idx})" class="bb-gradient-bg text-white font-bold px-5 py-3 rounded-full shadow-sm">
+                      ✓ Approve & Unlock Buddy
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- Section 2: Event Pricing & CRUD (Add/Edit/Delete Events) -->
+          <section class="bg-white rounded-3xl border border-stone-200 p-6 space-y-6 shadow-sm">
+            <div class="border-b border-stone-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span class="text-xs font-bold uppercase text-teal-700">2. Event Management (CRUD)</span>
+                <h2 class="text-xl font-extrabold text-stone-900">Add, Edit or Remove Pop-Up Events</h2>
+              </div>
+              <button onclick="addNewEvent()" class="bg-stone-900 text-white font-bold text-xs px-4 py-2.5 rounded-full">+ Add New Event</button>
+            </div>
+            <div id="admin-events-list" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              ${events.map((ev, idx) => `
+                <div class="p-4 rounded-2xl border border-stone-200 space-y-3 text-xs">
+                  <img src="${ev.img}" alt="${ev.title}" class="w-full h-28 object-cover rounded-xl bg-stone-100" />
+                  <div><label class="block font-bold text-stone-700">Event Title</label><input type="text" id="ev-title-${idx}" value="${ev.title}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div><label class="block font-bold text-stone-700">Venue Type</label><input type="text" id="ev-venue-${idx}" value="${ev.venue}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div><label class="block font-bold text-stone-700">Buddy Rate (₱)</label><input type="number" id="ev-buddy-${idx}" value="${ev.buddyPackage}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                    <div><label class="block font-bold text-stone-700">Solo Rate (₱)</label><input type="number" id="ev-solo-${idx}" value="${ev.soloPackage}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div><label class="block font-bold text-stone-700">Stalls Left</label><input type="number" id="ev-slots-${idx}" value="${ev.slotsLeft}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                    <div>
+                      <label class="block font-bold text-stone-700">Status</label>
+                      <select id="ev-status-${idx}" class="w-full border border-stone-300 rounded-lg px-2 py-1 mt-0.5 font-bold">
+                        <option value="OPEN" ${ev.status === 'OPEN' ? 'selected' : ''}>OPEN</option>
+                        <option value="ALMOST FULL" ${ev.status === 'ALMOST FULL' ? 'selected' : ''}>ALMOST FULL</option>
+                        <option value="SOLD OUT" ${ev.status === 'SOLD OUT' ? 'selected' : ''}>SOLD OUT</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div><label class="block font-bold text-stone-700">Photo URL</label><input type="text" id="ev-img-${idx}" value="${ev.img}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div class="flex gap-2 pt-1">
+                    <button onclick="saveEvent(${idx})" class="flex-1 bg-stone-900 text-white font-bold py-2 rounded-xl">Save Changes</button>
+                    <button onclick="deleteEvent(${idx})" class="bg-rose-100 text-rose-700 font-bold px-3 py-2 rounded-xl">Delete</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- Section 3: Booth Setup Supplies Management (CRUD) -->
+          <section class="bg-white rounded-3xl border border-stone-200 p-6 space-y-6 shadow-sm">
+            <div class="border-b border-stone-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span class="text-xs font-bold uppercase text-amber-600">3. Booth Setup Supplies Manager (CRUD)</span>
+                <h2 class="text-xl font-extrabold text-stone-900">Add, Edit or Remove Setup Supplies & Equipment</h2>
+              </div>
+              <button onclick="addNewSupply()" class="bg-stone-900 text-white font-bold text-xs px-4 py-2.5 rounded-full">+ Add Supply Item</button>
+            </div>
+            <div id="admin-supplies-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              ${supplies.map((s, idx) => `
+                <div class="p-4 rounded-2xl border border-stone-200 space-y-2.5 text-xs">
+                  <img src="${s.img}" alt="${s.name}" class="w-full h-24 object-cover rounded-xl bg-stone-100" />
+                  <div><label class="block font-bold text-stone-700">Item Name</label><input type="text" id="sup-name-${idx}" value="${s.name}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div><label class="block font-bold text-stone-700">Price Note</label><input type="text" id="sup-price-${idx}" value="${s.priceNote || ''}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div><label class="block font-bold text-stone-700">Description</label><input type="text" id="sup-desc-${idx}" value="${s.desc}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div><label class="block font-bold text-stone-700">Photo URL</label><input type="text" id="sup-img-${idx}" value="${s.img}" class="w-full border border-stone-300 rounded-lg px-2.5 py-1 mt-0.5" /></div>
+                  <div class="flex gap-2 pt-1">
+                    <button onclick="saveSupply(${idx})" class="flex-1 bg-stone-900 text-white font-bold py-2 rounded-xl">Save</button>
+                    <button onclick="deleteSupply(${idx})" class="bg-rose-100 text-rose-700 font-bold px-3 py-2 rounded-xl">Delete</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- Section 4: Admin Credentials Settings -->
+          <section class="bg-white rounded-3xl border border-stone-200 p-6 space-y-4 shadow-sm">
+            <div class="border-b border-stone-100 pb-4">
+              <span class="text-xs font-bold uppercase text-stone-500">4. Admin Account Settings</span>
+              <h2 class="text-xl font-extrabold text-stone-900">Change Admin Username & Password</h2>
+            </div>
+            <form onsubmit="updateAdminCredentials(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div><label class="block font-bold text-stone-700 mb-1">New Admin Email</label><input type="email" id="set-admin-email" value="${auth.email}" required class="w-full border border-stone-300 rounded-xl px-3 py-2" /></div>
+              <div><label class="block font-bold text-stone-700 mb-1">New Password</label><input type="text" id="set-admin-pass" value="${auth.pass}" required class="w-full border border-stone-300 rounded-xl px-3 py-2" /></div>
+              <div class="flex items-end"><button type="submit" class="w-full bg-teal-700 text-white font-bold py-2.5 rounded-xl">Save Admin Credentials</button></div>
+            </form>
+          </section>
+        </main>
+      `;
+    }
+
+    // Admin CRUD Actions
+    function approveBooking(index) {
+      const bookings = JSON.parse(localStorage.getItem('bb_v6_bookings') || '[]');
+      if (bookings[index]) {
+        bookings[index].status = 'Confirmed & Approved ✓';
+        localStorage.setItem('bb_v6_bookings', JSON.stringify(bookings));
+        renderAdminView();
+        alert('Merchant application approved! Their My Bookings page now unlocks their matched Booth Buddy.');
+      }
+    }
+
+    function addNewEvent() {
+      const events = JSON.parse(localStorage.getItem('bb_v6_events') || '[]');
+      events.push({ id: 'evt-' + Date.now(), dates: 'TBD 2026', title: 'New Pop-Up Market', venue: 'Metro Manila Venue', crowd: 'Local shoppers', hours: '10 AM - 9 PM', buddyPackage: 3000, soloPackage: 4500, slotsLeft: 10, status: 'OPEN', img: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=800&q=80' });
+      localStorage.setItem('bb_v6_events', JSON.stringify(events));
+      renderAdminView();
+    }
+
+    function saveEvent(index) {
+      const events = JSON.parse(localStorage.getItem('bb_v6_events') || '[]');
+      events[index].title = document.getElementById('ev-title-' + index).value;
+      events[index].venue = document.getElementById('ev-venue-' + index).value;
+      events[index].buddyPackage = parseInt(document.getElementById('ev-buddy-' + index).value, 10);
+      events[index].soloPackage = parseInt(document.getElementById('ev-solo-' + index).value, 10);
+      events[index].slotsLeft = parseInt(document.getElementById('ev-slots-' + index).value, 10);
+      events[index].status = document.getElementById('ev-status-' + index).value;
+      events[index].img = document.getElementById('ev-img-' + index).value;
+      localStorage.setItem('bb_v6_events', JSON.stringify(events));
+      renderAdminView();
+      alert('Event updated successfully!');
+    }
+
+    function deleteEvent(index) {
+      const events = JSON.parse(localStorage.getItem('bb_v6_events') || '[]');
+      events.splice(index, 1);
+      localStorage.setItem('bb_v6_events', JSON.stringify(events));
+      renderAdminView();
+    }
+
+    function addNewSupply() {
+      const supplies = JSON.parse(localStorage.getItem('bb_v6_supplies') || '[]');
+      supplies.push({ id: 'sup-' + Date.now(), name: 'New Setup Item', priceNote: '+₱300', desc: 'Description here', img: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=600&q=80' });
+      localStorage.setItem('bb_v6_supplies', JSON.stringify(supplies));
+      renderAdminView();
+    }
+
+    function saveSupply(index) {
+      const supplies = JSON.parse(localStorage.getItem('bb_v6_supplies') || '[]');
+      supplies[index].name = document.getElementById('sup-name-' + index).value;
+      supplies[index].priceNote = document.getElementById('sup-price-' + index).value;
+      supplies[index].desc = document.getElementById('sup-desc-' + index).value;
+      supplies[index].img = document.getElementById('sup-img-' + index).value;
+      localStorage.setItem('bb_v6_supplies', JSON.stringify(supplies));
+      renderAdminView();
+      alert('Supply item updated!');
+    }
+
+    function deleteSupply(index) {
+      const supplies = JSON.parse(localStorage.getItem('bb_v6_supplies') || '[]');
+      supplies.splice(index, 1);
+      localStorage.setItem('bb_v6_supplies', JSON.stringify(supplies));
+      renderAdminView();
+    }
+
+    function updateAdminCredentials(e) {
+      e.preventDefault();
+      const email = document.getElementById('set-admin-email').value;
+      const pass = document.getElementById('set-admin-pass').value;
+      localStorage.setItem('bb_v6_admin_auth', JSON.stringify({ email, pass }));
+      alert('Admin credentials updated successfully!');
+    }
+
+    function resetDemoData() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initStorage();
+      switchPage('home');
+    });
+  </script>
+</body>
+</html>
